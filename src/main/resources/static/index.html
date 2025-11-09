@@ -905,21 +905,6 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">Tags (select all that apply)</label>
-                <div class="tag-selector">
-                    <div class="tag-option" data-tag="Hard Grader">Hard Grader</div>
-                    <div class="tag-option" data-tag="Easy Grader">Easy Grader</div>
-                    <div class="tag-option" data-tag="Quick Grader">Quick Grader</div>
-                    <div class="tag-option" data-tag="Slow Grader">Slow Grader</div>
-                    <div class="tag-option" data-tag="Approachable">Approachable</div>
-                    <div class="tag-option" data-tag="Clear Explanations">Clear Explanations</div>
-                    <div class="tag-option" data-tag="Knowledgeable">Knowledgeable</div>
-                    <div class="tag-option" data-tag="Organized">Organized</div>
-                </div>
-                <input type="hidden" id="selectedTags" name="selectedTags">
-            </div>
-
-            <div class="form-group">
                 <label class="form-label" for="reviewComment">Additional Comments</label>
                 <textarea id="reviewComment" class="form-input" rows="4" placeholder="Share your experience with this TA..."></textarea>
             </div>
@@ -938,104 +923,8 @@
 </footer>
 
 <script>
-    // Sample TA data with detailed reviews
-    let TAS = [
-        {
-            id: 1,
-            name: "Rahul Sharma",
-            courses: ["CSE 250", "CSE 220"],
-            avgRating: 4.6,
-            reviewCount: 23,
-            aiSummary: "Rahul is consistently praised for his clear explanations and patience during office hours. Students appreciate his ability to break down complex data structures concepts. His responsiveness to questions on Piazza is highlighted as exceptional.",
-            reviews: [
-                {
-                    userId: "student1@buffalo.edu",
-                    course: "CSE 250",
-                    overallRating: 5,
-                    officeHours: 5,
-                    piazza: 5,
-                    grading: 4,
-                    tags: ["Clear Explanations", "Knowledgeable", "Approachable"],
-                    comment: "Rahul explains complex topics in a way that's easy to understand. Always available for help!",
-                    date: "2023-11-15"
-                },
-                {
-                    userId: "student2@buffalo.edu",
-                    course: "CSE 220",
-                    overallRating: 4,
-                    officeHours: 4,
-                    piazza: 5,
-                    grading: 3,
-                    tags: ["Hard Grader", "Knowledgeable"],
-                    comment: "Very knowledgeable and helpful during lab sessions. Sometimes a bit rushed though.",
-                    date: "2023-10-22"
-                }
-            ]
-        },
-        {
-            id: 2,
-            name: "Alan Hunt",
-            courses: ["CSE 331"],
-            avgRating: 4.9,
-            reviewCount: 18,
-            aiSummary: "Alan receives exceptional feedback for his detailed code reviews and algorithm explanations. Students note his office hours are extremely valuable for understanding algorithm design principles. Multiple reviews mention his talent for identifying subtle bugs in student code.",
-            reviews: [
-                {
-                    userId: "student3@buffalo.edu",
-                    course: "CSE 331",
-                    overallRating: 5,
-                    officeHours: 5,
-                    piazza: 5,
-                    grading: 5,
-                    tags: ["Clear Explanations", "Quick Grader", "Knowledgeable"],
-                    comment: "Alan's algorithm walkthroughs are incredible. He made dynamic programming actually make sense!",
-                    date: "2023-11-28"
-                }
-            ]
-        },
-        {
-            id: 3,
-            name: "Sarah Kim",
-            courses: ["CSE 341", "CSE 379"],
-            avgRating: 4.2,
-            reviewCount: 15,
-            aiSummary: "Sarah is noted for her organized approach to software engineering concepts. Students appreciate her practical examples from industry experience. Some reviews mention she could be more available outside scheduled hours.",
-            reviews: [
-                {
-                    userId: "student4@buffalo.edu",
-                    course: "CSE 341",
-                    overallRating: 4,
-                    officeHours: 3,
-                    piazza: 4,
-                    grading: 4,
-                    tags: ["Organized", "Clear Explanations"],
-                    comment: "Great at explaining software design patterns. Her real-world examples were very helpful.",
-                    date: "2023-11-10"
-                }
-            ]
-        },
-        {
-            id: 4,
-            name: "Meghan Lee",
-            courses: ["CSE 115", "CSE 116"],
-            avgRating: 4.4,
-            reviewCount: 31,
-            aiSummary: "Meghan is highly regarded for her approachability and effectiveness with introductory programming students. Reviews consistently mention her talent for making beginners feel comfortable asking questions. Her exam review sessions are frequently described as exceptionally helpful.",
-            reviews: [
-                {
-                    userId: "student5@buffalo.edu",
-                    course: "CSE 115",
-                    overallRating: 5,
-                    officeHours: 5,
-                    piazza: 4,
-                    grading: 4,
-                    tags: ["Approachable", "Easy Grader", "Clear Explanations"],
-                    comment: "Meghan made my first programming class so much less intimidating. Patient and clear!",
-                    date: "2023-11-20"
-                }
-            ]
-        }
-    ];
+    // Client-side TA store (populated from server)
+    let TAS = [];
 
     // Current user state
     let currentUser = null;
@@ -1090,15 +979,53 @@
         }
 
         if (taId) {
-            // We're on a detail page, show TA details
-            showTADetail(taId);
+            // We're on a detail page, fetch TA detail from server
+            fetch(`/api/tas/${encodeURIComponent(taId)}`)
+                .then(r => {
+                    if (!r.ok) throw new Error('TA not found');
+                    return r.json();
+                })
+                .then(serverTA => {
+                    const ta = transformServerTA(serverTA);
+                    showTADetail(ta);
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.querySelector('.container').innerHTML = `<div class="ta-detail"><h2>TA Not Found</h2><p>The requested teaching assistant could not be found.</p><button class="btn btn-primary" onclick="window.location.href = '?'">Back to TA List</button></div>`;
+                });
         } else {
-            // We're on the main page, show TA list
+            // We're on the main page, fetch TA list
             initializeMainPage();
         }
 
         // Set up event listeners
         setupEventListeners();
+    }
+
+    function transformServerTA(serverTA) {
+        // Server TA may have _id or id and averageRating or avgRating
+        const id = serverTA.id || serverTA._id;
+        const avgRating = serverTA.averageRating || serverTA.avgRating || 0;
+        const reviews = (serverTA.reviews || []).map(r => ({
+            // support both shapes: {rating, comment, timestamp} and older client shape
+            overallRating: r.overallRating || r.rating || 0,
+            officeHours: r.officeHours || r.officeHours || null,
+            piazza: r.piazza || null,
+            grading: r.grading || null,
+            tags: r.tags || [],
+            comment: r.comment || r.text || '',
+            date: r.timestamp ? (new Date(r.timestamp)).toISOString().split('T')[0] : (r.date || '')
+        }));
+
+        return {
+            id: id,
+            name: serverTA.name,
+            courses: serverTA.courses || [],
+            avgRating: avgRating,
+            reviewCount: reviews.length,
+            aiSummary: serverTA.aiSummary || serverTA.summary || "No summary available.",
+            reviews: reviews
+        };
     }
 
     function setupEventListeners() {
@@ -1314,26 +1241,39 @@
     }
 
     function initializeMainPage() {
-        // Build course dropdown from data
-        const courseSet = new Set();
-        TAS.forEach(ta => ta.courses.forEach(c => courseSet.add(c)));
+        // Fetch TA list from server
+        fetch('/api/tas')
+            .then(r => r.json())
+            .then(data => {
+                TAS = (data || []).map(transformServerTA);
 
-        // Sort courses numerically
-        const sortedCourses = Array.from(courseSet).sort((a, b) => {
-            const numA = parseInt(a.match(/\d+/)[0]);
-            const numB = parseInt(b.match(/\d+/)[0]);
-            return numA - numB;
-        });
+                // Build course dropdown from fetched data
+                const courseSet = new Set();
+                TAS.forEach(ta => ta.courses.forEach(c => courseSet.add(c)));
 
-        sortedCourses.forEach(course => {
-            const opt = document.createElement("option");
-            opt.value = course;
-            opt.textContent = course;
-            courseSelect.appendChild(opt);
-        });
+                // Sort courses numerically when possible, otherwise lexicographically
+                const sortedCourses = Array.from(courseSet).sort((a, b) => {
+                    const numA = (a.match(/\d+/) || [0])[0];
+                    const numB = (b.match(/\d+/) || [0])[0];
+                    if (numA && numB) return parseInt(numA) - parseInt(numB);
+                    return a.localeCompare(b);
+                });
 
-        // Initial render
-        renderList(TAS);
+                sortedCourses.forEach(course => {
+                    const opt = document.createElement("option");
+                    opt.value = course;
+                    opt.textContent = course;
+                    courseSelect.appendChild(opt);
+                });
+
+                // Initial render
+                renderList(TAS);
+            })
+            .catch(err => {
+                console.error('Failed to load TAs from API', err);
+                // fallback: show empty state
+                renderList([]);
+            });
     }
 
     function updateAuthUI() {
@@ -1364,36 +1304,39 @@
             .filter(course => course !== '');
 
         if (name && courses.length > 0) {
-            // Create new TA object
-            const newTA = {
-                id: Math.max(...TAS.map(ta => ta.id)) + 1,
-                name: name,
-                courses: courses,
-                avgRating: 0,
-                reviewCount: 0,
-                aiSummary: "No reviews yet. Be the first to review this TA!",
-                reviews: []
-            };
+            // POST to server
+            fetch('/api/tas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, courses: courses })
+            })
+            .then(r => {
+                if (!r.ok) throw new Error('Failed to create TA');
+                return r.json();
+            })
+            .then(created => {
+                const ta = transformServerTA(created);
+                TAS.push(ta);
+                addTAModal.style.display = "none";
+                addTAForm.reset();
 
-            TAS.push(newTA);
-            addTAModal.style.display = "none";
-            addTAForm.reset();
+                // Update course dropdown with any new courses
+                ta.courses.forEach(course => {
+                    if (!Array.from(courseSelect.options).some(opt => opt.value === course)) {
+                        const opt = document.createElement("option");
+                        opt.value = course;
+                        opt.textContent = course;
+                        courseSelect.appendChild(opt);
+                    }
+                });
 
-            // Update course dropdown
-            courses.forEach(course => {
-                if (!Array.from(courseSelect.options).some(opt => opt.value === course)) {
-                    const opt = document.createElement("option");
-                    opt.value = course;
-                    opt.textContent = course;
-                    courseSelect.appendChild(opt);
-                }
+                renderList(TAS);
+                alert(`Successfully added ${name} to the TA list!`);
+            })
+            .catch(err => {
+                console.error('Error creating TA', err);
+                alert('Failed to create TA. Try again later.');
             });
-
-            // Re-render the list
-            renderList(TAS);
-
-            // Show success message
-            alert(`Successfully added ${name} to the TA list!`);
         }
     }
 
@@ -1405,7 +1348,7 @@
         }
 
         // Check if user has already reviewed this TA
-        const hasReviewed = ta.reviews.some(review => review.userId === currentUser);
+        const hasReviewed = ta.reviews.some(review => review.userId === currentUser || review.user === currentUser);
         if (hasReviewed) {
             alert("You have already submitted a review for this TA. Each user can only review a TA once.");
             return;
@@ -1444,59 +1387,49 @@
 
         const formData = new FormData(addReviewForm);
         const overallRating = parseInt(formData.get("overallRating"));
-        const officeHours = parseInt(formData.get("officeHours"));
-        const piazza = parseInt(formData.get("piazza"));
-        const grading = parseInt(formData.get("grading"));
-        const course = formData.get("reviewCourse");
         const comment = formData.get("reviewComment");
-        const tags = JSON.parse(formData.get("selectedTags"));
 
-        // Create new review
-        const newReview = {
-            userId: currentUser,
-            course: course,
-            overallRating: overallRating,
-            officeHours: officeHours,
-            piazza: piazza,
-            grading: grading,
-            tags: tags,
-            comment: comment,
-            date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
-        };
-
-        // Add review to TA
-        const taIndex = TAS.findIndex(ta => ta.id === currentTAForReview.id);
-        if (taIndex !== -1) {
-            TAS[taIndex].reviews.push(newReview);
-
-            // Update TA stats
-            updateTAStats(TAS[taIndex]);
-
-            // Close modal and reset
-            addReviewModal.style.display = "none";
-            addReviewForm.reset();
-
-            // If we're on the detail page, refresh it
+        // Post a minimal review object to the server (backend expects rating + comment)
+        fetch(`/api/tas/${encodeURIComponent(currentTAForReview.id)}/reviews`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rating: overallRating, comment: comment })
+        })
+        .then(r => {
+            if (!r.ok) throw new Error('Failed to submit review');
+            return r.json();
+        })
+        .then(updatedTA => {
+            // Update local copy
+            const updated = transformServerTA(updatedTA);
+            const idx = TAS.findIndex(t => t.id === updated.id);
+            if (idx !== -1) TAS[idx] = updated;
             if (taId) {
-                showTADetail(taId);
+                // We're on detail page — reload it
+                showTADetail(updated);
             } else {
-                // Otherwise refresh the list
                 renderList(TAS);
             }
 
-            alert("Thank you for your review!");
-        }
+            addReviewModal.style.display = 'none';
+            addReviewForm.reset();
+            alert('Thank you for your review!');
+        })
+        .catch(err => {
+            console.error('Error submitting review', err);
+            alert('Failed to submit review. Try again later.');
+        });
     }
 
     function updateTAStats(ta) {
-        if (ta.reviews.length === 0) {
+        if (!ta.reviews || ta.reviews.length === 0) {
             ta.avgRating = 0;
             ta.reviewCount = 0;
             return;
         }
 
-        // Calculate average overall rating
-        const totalRating = ta.reviews.reduce((sum, review) => sum + review.overallRating, 0);
+        // Calculate average overall rating (reviews may use overallRating or rating)
+        const totalRating = ta.reviews.reduce((sum, review) => sum + (review.overallRating || review.rating || 0), 0);
         ta.avgRating = totalRating / ta.reviews.length;
         ta.reviewCount = ta.reviews.length;
 
@@ -1505,31 +1438,28 @@
     }
 
     function updateAISummary(ta) {
-        if (ta.reviews.length === 0) {
+        if (!ta.reviews || ta.reviews.length === 0) {
             ta.aiSummary = "No reviews yet. Be the first to review this TA!";
             return;
         }
 
-        // Simple algorithm to generate summary based on review data
-        const officeHoursAvg = ta.reviews.reduce((sum, review) => sum + review.officeHours, 0) / ta.reviews.length;
-        const piazzaAvg = ta.reviews.reduce((sum, review) => sum + review.piazza, 0) / ta.reviews.length;
-        const gradingAvg = ta.reviews.reduce((sum, review) => sum + review.grading, 0) / ta.reviews.length;
+        // Basic summary logic (same as before)
+        const officeHoursAvg = ta.reviews.reduce((sum, review) => sum + (review.officeHours || 0), 0) / ta.reviews.length;
+        const piazzaAvg = ta.reviews.reduce((sum, review) => sum + (review.piazza || 0), 0) / ta.reviews.length;
+        const gradingAvg = ta.reviews.reduce((sum, review) => sum + (review.grading || 0), 0) / ta.reviews.length;
 
-        // Count tag frequencies
         const tagCounts = {};
         ta.reviews.forEach(review => {
-            review.tags.forEach(tag => {
+            (review.tags || []).forEach(tag => {
                 tagCounts[tag] = (tagCounts[tag] || 0) + 1;
             });
         });
 
-        // Get top tags
         const topTags = Object.entries(tagCounts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 3)
             .map(entry => entry[0]);
 
-        // Generate summary based on data
         let summary = `${ta.name} is `;
 
         if (ta.avgRating >= 4.5) {
@@ -1647,32 +1577,38 @@
         renderList(filtered);
     }
 
-    function showTADetail(id) {
-        // Update the main container to show TA details
-        const container = document.querySelector('.container');
-        const ta = TAS.find(ta => ta.id === parseInt(id));
-
-        if (!ta) {
-            container.innerHTML = `
-                    <div class="ta-detail">
-                        <h2>TA Not Found</h2>
-                        <p>The requested teaching assistant could not be found.</p>
-                        <button class="btn btn-primary" onclick="window.location.href = '?'">Back to TA List</button>
-                    </div>
-                `;
+    function showTADetail(idOrTA) {
+        // If called with an id string, fetch from server
+        if (typeof idOrTA === 'string' || typeof idOrTA === 'number') {
+            const id = idOrTA;
+            fetch(`/api/tas/${encodeURIComponent(id)}`)
+                .then(r => {
+                    if (!r.ok) throw new Error('TA not found');
+                    return r.json();
+                })
+                .then(serverTA => showTADetail(transformServerTA(serverTA)))
+                .catch(err => {
+                    console.error(err);
+                    document.querySelector('.container').innerHTML = `<div class="ta-detail"><h2>TA Not Found</h2><p>The requested teaching assistant could not be found.</p><button class="btn btn-primary" onclick="window.location.href = '?'">Back to TA List</button></div>`;
+                });
             return;
         }
 
+        // Now idOrTA is a TA object transformed for client use
+        const ta = idOrTA;
+        // Update the main container to show TA details
+        const container = document.querySelector('.container');
+
         // Calculate averages for rating breakdown
         const officeHoursAvg = ta.reviews.length > 0 ?
-            (ta.reviews.reduce((sum, review) => sum + review.officeHours, 0) / ta.reviews.length).toFixed(1) : "N/A";
+            (ta.reviews.reduce((sum, review) => sum + (review.officeHours || 0), 0) / ta.reviews.length).toFixed(1) : "N/A";
         const piazzaAvg = ta.reviews.length > 0 ?
-            (ta.reviews.reduce((sum, review) => sum + review.piazza, 0) / ta.reviews.length).toFixed(1) : "N/A";
+            (ta.reviews.reduce((sum, review) => sum + (review.piazza || 0), 0) / ta.reviews.length).toFixed(1) : "N/A";
         const gradingAvg = ta.reviews.length > 0 ?
-            (ta.reviews.reduce((sum, review) => sum + review.grading, 0) / ta.reviews.length).toFixed(1) : "N/A";
+            (ta.reviews.reduce((sum, review) => sum + (review.grading || 0), 0) / ta.reviews.length).toFixed(1) : "N/A";
 
         // Get unique courses from reviews for filtering
-        const reviewCourses = [...new Set(ta.reviews.map(review => review.course))];
+        const reviewCourses = [...new Set(ta.reviews.map(review => review.course || ""))].filter(Boolean);
 
         // Calculate rating bar width
         const ratingPercent = (ta.avgRating / 5) * 100;
@@ -1737,31 +1673,31 @@
                         </div>
                         ${ta.reviews.length > 0 ?
             ta.reviews.map(review => `
-                                <div class="review-card" data-course="${review.course}">
+                                <div class="review-card" data-course="${review.course || ''}">
                                     ${review.course ? `<div class="review-course">${review.course}</div>` : ''}
                                     <div class="review-header">
                                         <div class="anonymous-user">UB Student</div>
-                                        <div class="review-date">${review.date}</div>
+                                        <div class="review-date">${review.date || ''}</div>
                                     </div>
                                     <div class="review-details">
                                         <div class="rating-category">
                                             <span class="rating-category-name">Overall</span>
-                                            <span class="rating-category-value">${review.overallRating}/5 ${generateStars(review.overallRating)}</span>
+                                            <span class="rating-category-value">${(review.overallRating || review.rating || 0)}/5 ${generateStars((review.overallRating || review.rating || 0))}</span>
                                         </div>
                                         <div class="rating-category">
                                             <span class="rating-category-name">Office Hours</span>
-                                            <span class="rating-category-value">${review.officeHours}/5</span>
+                                            <span class="rating-category-value">${review.officeHours || 'N/A'}/5</span>
                                         </div>
                                         <div class="rating-category">
                                             <span class="rating-category-name">Piazza</span>
-                                            <span class="rating-category-value">${review.piazza}/5</span>
+                                            <span class="rating-category-value">${review.piazza || 'N/A'}/5</span>
                                         </div>
                                         <div class="rating-category">
                                             <span class="rating-category-name">Grading</span>
-                                            <span class="rating-category-value">${review.grading}/5</span>
+                                            <span class="rating-category-value">${review.grading || 'N/A'}/5</span>
                                         </div>
                                     </div>
-                                    ${review.tags.length > 0 ? `
+                                    ${review.tags && review.tags.length > 0 ? `
                                         <div class="review-tags">
                                             ${review.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('')}
                                         </div>
@@ -1795,3 +1731,4 @@
 </script>
 </body>
 </html>
+
