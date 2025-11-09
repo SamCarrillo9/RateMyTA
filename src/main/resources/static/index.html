@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UB Rate My TA - Computer Science & Engineering</title>
+    <style>
+        :root {
+            --ub-blue: #005bbb;
+            --ub-white: #ffffff;
+            --letchworth-autumn: #e56a54;
+            --solar-strand: #ffc72c;
+            --greiner-green: #ebec00;
+            --lake-lasalle: #00a69c;
+            --capen-brick: #990000;
+            --bronze-buffalo: #ad841f;
+            --olmsted-green: #6da04b;
+            --niagara-whirlpool: #006570;
+            --victor-e-blue: #2f9fd0;
+            --harriman-blue: #002f56;
+            --baird-point: #e4e4e4;
+            --putnam-gray: #666666;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --border-light: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: var(--ub-blue);
+            color: var(--ub-white);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .title::before {
+            content: "🐂";
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            background: var(--ub-white);
+            color: var(--ub-blue);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .btn:hover {
+            background: var(--baird-point);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--ub-blue);
+            color: var(--ub-white);
+        }
+
+        .btn-primary:hover {
+            background: var(--harriman-blue);
+        }
+
+        .btn-disabled {
+            background: var(--baird-point);
+            color: var(--putnam-gray);
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            transform: none;
+            background: var(--baird-point);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1rem 3rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, var(--ub-blue) 0%, var(--harriman-blue) 100%);
+            color: var(--ub-white);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: var(--ub-white);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+
+        .input, .select {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.5rem;
+            background: var(--ub-white);
+            font-size: 0.95rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .input:focus, .select:focus {
+            outline: none;
+            border-color: var(--ub-blue);
+            box-shadow: 0 0 0 3px rgba(0, 91, 187, 0.1);
+        }
+
+        .ta-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .ta-card {
+            background: var(--ub-white);
+            border: 1px solid var(--border-light);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .ta-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--ub-blue);
+        }
+
+        .ta-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: var(--harriman-blue);
+        }
+
+        .ta-courses {
+            font-size: 0.9rem;
+            color: var(--putnam-gray);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .course-tag {
+            background: var(--lake-lasalle);
+            color: var(--ub-white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .ta-rating {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .rating-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--putnam-gray);
+            letter-spacing: .05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .rating-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--capen-brick);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stars {
+            color: var(--solar-strand);
+            font-size: 1.25rem;
+            margin-left: 0.5rem;
+        }
+
+        .empty {
+            color: var(--putnam-gray);
+            font-size: 1rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--ub-white);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+
+        .footer {
+            background: var(--harriman-blue);
+            color: var(--ub-white);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--ub-white);
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--ub-white);
+            border-radius: 0.75rem;
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--harriman-blue);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--putnam-gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--ub-blue);
+            box-shadow: 0 0 0 3px rgba(0, 91, 187, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Email Verification Styles */
+        .verification-info {
+            background: var(--baird-point);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--lake-lasalle);
+        }
+
+        .verification-code {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .code-input {
+            width: 3rem;
+            height: 3.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid var(--border-light);
+            border-radius: 0.5rem;
+        }
+
+        .code-input:focus {
+            border-color: var(--ub-blue);
+            outline: none;
+        }
+
+        .resend-link {
+            color: var(--ub-blue);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .timer {
+            color: var(--putnam-gray);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* TA Detail Page */
+        .ta-detail {
+            background: var(--ub-white);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .ta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .ta-info h2 {
+            font-size: 1.75rem;
+            color: var(--harriman-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-summary {
+            background: var(--baird-point);
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--ub-blue);
+        }
+
+        .ai-summary h3 {
+            color: var(--harriman-blue);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-summary h3::before {
+            content: "🤖";
+        }
+
+        .reviews-section h3 {
+            margin-bottom: 1rem;
+            color: var(--harriman-blue);
+            border-bottom: 2px solid var(--border-light);
+            padding-bottom: 0.5rem;
+        }
+
+        .review-card {
+            background: var(--bg-light);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--lake-lasalle);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-rating {
+            color: var(--solar-strand);
+            font-weight: 600;
+        }
+
+        .review-date {
+            color: var(--putnam-gray);
+            font-size: 0.85rem;
+        }
+
+        .review-comment {
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+        }
+
+        .review-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .rating-category {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .rating-category-name {
+            font-size: 0.9rem;
+            color: var(--putnam-gray);
+        }
+
+        .rating-category-value {
+            font-weight: 600;
+            color: var(--harriman-blue);
+        }
+
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .review-tag {
+            background: var(--victor-e-blue);
+            color: var(--ub-white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .review-course {
+            display: inline-block;
+            background: var(--olmsted-green);
+            color: var(--ub-white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Rating breakdown */
+        .rating-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .breakdown-category {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .breakdown-category h4 {
+            color: var(--harriman-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .breakdown-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--capen-brick);
+        }
+
+        /* Star rating input */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            font-size: 1.5rem;
+            color: var(--baird-point);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: var(--solar-strand);
+        }
+
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .tag-option {
+            background: var(--baird-point);
+            color: var(--putnam-gray);
+            padding: 0.5rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-option.selected {
+            background: var(--victor-e-blue);
+            color: var(--ub-white);
+        }
+
+        @media (max-width: 768px) {
+            .ta-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .ta-rating {
+                text-align: left;
+                align-items: flex-start;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .input, .select {
+                min-width: 100%;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ta-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .review-details {
+                grid-template-columns: 1fr;
+            }
+
+            .rating-breakdown {
+                grid-template-columns: 1fr;
+            }
+
+            .verification-code {
+                justify-content: center;
+            }
+        }
+
+        /* Rating visualization */
+        .rating-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--baird-point);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+
+        .rating-fill {
+            height: 100%;
+            background: var(--solar-strand);
+        }
+
+        /* User info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--ub-blue);
+            color: var(--ub-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Verification Status */
+        .verification-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .verified-badge {
+            background: var(--olmsted-green);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .verified-badge::before {
+            content: "✓";
+        }
+
+        /* Anonymous user styling */
+        .anonymous-user {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--putnam-gray);
+            font-size: 0.9rem;
+        }
+
+        .anonymous-user::before {
+            content: "🙂";
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="title">UB Rate My TA</div>
+    <button id="authButton" class="btn">Sign in with UB Email</button>
+</nav>
+
+<main class="container">
+    <section class="hero">
+        <h1>Computer Science & Engineering TAs</h1>
+        <p>Find and rate teaching assistants to help improve the learning experience for everyone</p>
+    </section>
+
+    <div class="action-bar">
+        <div class="filters">
+            <input id="searchInput" class="input" placeholder="Search TA or course..." />
+            <select id="courseSelect" class="select">
+                <option value="all">All courses</option>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+        <button id="addTAButton" class="btn btn-primary">+ Add New TA</button>
+    </div>
+
+    <div id="taList" class="ta-list"></div>
+    <p id="emptyState" class="empty" style="display:none;">
+        No TAs match your search criteria. Try adjusting your filters.
+    </p>
+</main>
+
+<!-- Modal for adding a new TA -->
+<div id="addTAModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Add New Teaching Assistant</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <form id="addTAForm">
+            <div class="form-group">
+                <label class="form-label" for="taName">TA Name</label>
+                <input type="text" id="taName" class="form-input" placeholder="Enter TA's full name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="taCourses">Courses (comma separated)</label>
+                <input type="text" id="taCourses" class="form-input" placeholder="CSE 115, CSE 250" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="cancelAddTA">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add TA</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal for authentication -->
+<div id="authModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">UB Email Authentication</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+
+        <!-- Step 1: Email Input -->
+        <div id="emailStep">
+            <div class="verification-info">
+                <p>To ensure only UB students can submit reviews, we'll send a verification code to your UB email address.</p>
+            </div>
+            <form id="authForm">
+                <div class="form-group">
+                    <label class="form-label" for="emailInput">UB Email Address</label>
+                    <input type="email" id="emailInput" class="form-input" placeholder="yourname@buffalo.edu" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="cancelAuth">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Send Verification Code</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Step 2: Code Verification -->
+        <div id="codeStep" style="display: none;">
+            <div class="verification-info">
+                <p>We've sent a 6-digit verification code to <strong id="emailDisplay"></strong>.</p>
+                <p>Please check your inbox and enter the code below.</p>
+                <div class="timer" id="timer">Code expires in: 10:00</div>
+                <a class="resend-link" id="resendCode">Didn't receive the code? Resend</a>
+            </div>
+            <form id="codeForm">
+                <div class="form-group">
+                    <label class="form-label">Verification Code</label>
+                    <div class="verification-code">
+                        <input type="text" class="code-input" maxlength="1" data-index="0">
+                        <input type="text" class="code-input" maxlength="1" data-index="1">
+                        <input type="text" class="code-input" maxlength="1" data-index="2">
+                        <input type="text" class="code-input" maxlength="1" data-index="3">
+                        <input type="text" class="code-input" maxlength="1" data-index="4">
+                        <input type="text" class="code-input" maxlength="1" data-index="5">
+                    </div>
+                    <input type="hidden" id="fullCode" name="fullCode">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" id="backToEmail">Back</button>
+                    <button type="submit" class="btn btn-primary">Verify</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding a review -->
+<div id="addReviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Add Review for <span id="reviewTAName"></span></h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <form id="addReviewForm">
+            <div class="form-group">
+                <label class="form-label">Course</label>
+                <select id="reviewCourse" class="form-input" required>
+                    <!-- Options will be populated by JavaScript -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Overall Rating</label>
+                <div class="star-rating">
+                    <input type="radio" id="star5" name="overallRating" value="5" required>
+                    <label for="star5">★</label>
+                    <input type="radio" id="star4" name="overallRating" value="4">
+                    <label for="star4">★</label>
+                    <input type="radio" id="star3" name="overallRating" value="3">
+                    <label for="star3">★</label>
+                    <input type="radio" id="star2" name="overallRating" value="2">
+                    <label for="star2">★</label>
+                    <input type="radio" id="star1" name="overallRating" value="1">
+                    <label for="star1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Helpfulness in Office Hours</label>
+                <div class="star-rating">
+                    <input type="radio" id="office5" name="officeHours" value="5" required>
+                    <label for="office5">★</label>
+                    <input type="radio" id="office4" name="officeHours" value="4">
+                    <label for="office4">★</label>
+                    <input type="radio" id="office3" name="officeHours" value="3">
+                    <label for="office3">★</label>
+                    <input type="radio" id="office2" name="officeHours" value="2">
+                    <label for="office2">★</label>
+                    <input type="radio" id="office1" name="officeHours" value="1">
+                    <label for="office1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Responsiveness on Piazza</label>
+                <div class="star-rating">
+                    <input type="radio" id="piazza5" name="piazza" value="5" required>
+                    <label for="piazza5">★</label>
+                    <input type="radio" id="piazza4" name="piazza" value="4">
+                    <label for="piazza4">★</label>
+                    <input type="radio" id="piazza3" name="piazza" value="3">
+                    <label for="piazza3">★</label>
+                    <input type="radio" id="piazza2" name="piazza" value="2">
+                    <label for="piazza2">★</label>
+                    <input type="radio" id="piazza1" name="piazza" value="1">
+                    <label for="piazza1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Grading Style</label>
+                <div class="star-rating">
+                    <input type="radio" id="grading5" name="grading" value="5" required>
+                    <label for="grading5">★</label>
+                    <input type="radio" id="grading4" name="grading" value="4">
+                    <label for="grading4">★</label>
+                    <input type="radio" id="grading3" name="grading" value="3">
+                    <label for="grading3">★</label>
+                    <input type="radio" id="grading2" name="grading" value="2">
+                    <label for="grading2">★</label>
+                    <input type="radio" id="grading1" name="grading" value="1">
+                    <label for="grading1">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tags (select all that apply)</label>
+                <div class="tag-selector">
+                    <div class="tag-option" data-tag="Hard Grader">Hard Grader</div>
+                    <div class="tag-option" data-tag="Easy Grader">Easy Grader</div>
+                    <div class="tag-option" data-tag="Quick Grader">Quick Grader</div>
+                    <div class="tag-option" data-tag="Slow Grader">Slow Grader</div>
+                    <div class="tag-option" data-tag="Approachable">Approachable</div>
+                    <div class="tag-option" data-tag="Clear Explanations">Clear Explanations</div>
+                    <div class="tag-option" data-tag="Knowledgeable">Knowledgeable</div>
+                    <div class="tag-option" data-tag="Organized">Organized</div>
+                </div>
+                <input type="hidden" id="selectedTags" name="selectedTags">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="reviewComment">Additional Comments</label>
+                <textarea id="reviewComment" class="form-input" rows="4" placeholder="Share your experience with this TA..."></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn" id="cancelReview">Cancel</button>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer class="footer">
+    <p>University at Buffalo • Computer Science & Engineering Department</p>
+    <p>This platform is designed to help students provide constructive feedback on teaching assistants.</p>
+</footer>
+
+<script>
+    // Sample TA data with detailed reviews
+    let TAS = [
+        {
+            id: 1,
+            name: "Rahul Sharma",
+            courses: ["CSE 250", "CSE 220"],
+            avgRating: 4.6,
+            reviewCount: 23,
+            aiSummary: "Rahul is consistently praised for his clear explanations and patience during office hours. Students appreciate his ability to break down complex data structures concepts. His responsiveness to questions on Piazza is highlighted as exceptional.",
+            reviews: [
+                {
+                    userId: "student1@buffalo.edu",
+                    course: "CSE 250",
+                    overallRating: 5,
+                    officeHours: 5,
+                    piazza: 5,
+                    grading: 4,
+                    tags: ["Clear Explanations", "Knowledgeable", "Approachable"],
+                    comment: "Rahul explains complex topics in a way that's easy to understand. Always available for help!",
+                    date: "2023-11-15"
+                },
+                {
+                    userId: "student2@buffalo.edu",
+                    course: "CSE 220",
+                    overallRating: 4,
+                    officeHours: 4,
+                    piazza: 5,
+                    grading: 3,
+                    tags: ["Hard Grader", "Knowledgeable"],
+                    comment: "Very knowledgeable and helpful during lab sessions. Sometimes a bit rushed though.",
+                    date: "2023-10-22"
+                }
+            ]
+        },
+        {
+            id: 2,
+            name: "Alan Hunt",
+            courses: ["CSE 331"],
+            avgRating: 4.9,
+            reviewCount: 18,
+            aiSummary: "Alan receives exceptional feedback for his detailed code reviews and algorithm explanations. Students note his office hours are extremely valuable for understanding algorithm design principles. Multiple reviews mention his talent for identifying subtle bugs in student code.",
+            reviews: [
+                {
+                    userId: "student3@buffalo.edu",
+                    course: "CSE 331",
+                    overallRating: 5,
+                    officeHours: 5,
+                    piazza: 5,
+                    grading: 5,
+                    tags: ["Clear Explanations", "Quick Grader", "Knowledgeable"],
+                    comment: "Alan's algorithm walkthroughs are incredible. He made dynamic programming actually make sense!",
+                    date: "2023-11-28"
+                }
+            ]
+        },
+        {
+            id: 3,
+            name: "Sarah Kim",
+            courses: ["CSE 341", "CSE 379"],
+            avgRating: 4.2,
+            reviewCount: 15,
+            aiSummary: "Sarah is noted for her organized approach to software engineering concepts. Students appreciate her practical examples from industry experience. Some reviews mention she could be more available outside scheduled hours.",
+            reviews: [
+                {
+                    userId: "student4@buffalo.edu",
+                    course: "CSE 341",
+                    overallRating: 4,
+                    officeHours: 3,
+                    piazza: 4,
+                    grading: 4,
+                    tags: ["Organized", "Clear Explanations"],
+                    comment: "Great at explaining software design patterns. Her real-world examples were very helpful.",
+                    date: "2023-11-10"
+                }
+            ]
+        },
+        {
+            id: 4,
+            name: "Meghan Lee",
+            courses: ["CSE 115", "CSE 116"],
+            avgRating: 4.4,
+            reviewCount: 31,
+            aiSummary: "Meghan is highly regarded for her approachability and effectiveness with introductory programming students. Reviews consistently mention her talent for making beginners feel comfortable asking questions. Her exam review sessions are frequently described as exceptionally helpful.",
+            reviews: [
+                {
+                    userId: "student5@buffalo.edu",
+                    course: "CSE 115",
+                    overallRating: 5,
+                    officeHours: 5,
+                    piazza: 4,
+                    grading: 4,
+                    tags: ["Approachable", "Easy Grader", "Clear Explanations"],
+                    comment: "Meghan made my first programming class so much less intimidating. Patient and clear!",
+                    date: "2023-11-20"
+                }
+            ]
+        }
+    ];
+
+    // Current user state
+    let currentUser = null;
+    let currentTAForReview = null;
+    let verificationCode = null;
+    let verificationTimer = null;
+    let verificationEmail = null;
+
+    // DOM Elements
+    const taListEl = document.getElementById("taList");
+    const searchInput = document.getElementById("searchInput");
+    const courseSelect = document.getElementById("courseSelect");
+    const emptyState = document.getElementById("emptyState");
+    const addTAButton = document.getElementById("addTAButton");
+    const addTAModal = document.getElementById("addTAModal");
+    const addTAForm = document.getElementById("addTAForm");
+    const cancelAddTA = document.getElementById("cancelAddTA");
+    const closeModalBtns = document.querySelectorAll(".close-btn");
+    const authButton = document.getElementById("authButton");
+    const authModal = document.getElementById("authModal");
+    const authForm = document.getElementById("authForm");
+    const cancelAuth = document.getElementById("cancelAuth");
+    const addReviewModal = document.getElementById("addReviewModal");
+    const addReviewForm = document.getElementById("addReviewForm");
+    const cancelReview = document.getElementById("cancelReview");
+    const reviewTAName = document.getElementById("reviewTAName");
+    const reviewCourse = document.getElementById("reviewCourse");
+    const tagOptions = document.querySelectorAll(".tag-option");
+    const emailStep = document.getElementById("emailStep");
+    const codeStep = document.getElementById("codeStep");
+    const codeForm = document.getElementById("codeForm");
+    const backToEmail = document.getElementById("backToEmail");
+    const emailDisplay = document.getElementById("emailDisplay");
+    const resendCode = document.getElementById("resendCode");
+    const timerDisplay = document.getElementById("timer");
+    const codeInputs = document.querySelectorAll(".code-input");
+    const fullCodeInput = document.getElementById("fullCode");
+
+    // Check if we're on a TA detail page
+    const urlParams = new URLSearchParams(window.location.search);
+    const taId = urlParams.get('id');
+
+    // Initialize the application
+    initApp();
+
+    function initApp() {
+        // Check for stored user
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            currentUser = storedUser;
+            updateAuthUI();
+        }
+
+        if (taId) {
+            // We're on a detail page, show TA details
+            showTADetail(taId);
+        } else {
+            // We're on the main page, show TA list
+            initializeMainPage();
+        }
+
+        // Set up event listeners
+        setupEventListeners();
+    }
+
+    function setupEventListeners() {
+        // Main page event listeners
+        if (!taId) {
+            searchInput.addEventListener("input", applyFilters);
+            courseSelect.addEventListener("change", applyFilters);
+            addTAButton.addEventListener("click", () => addTAModal.style.display = "flex");
+            cancelAddTA.addEventListener("click", () => addTAModal.style.display = "none");
+            addTAForm.addEventListener("submit", handleAddTA);
+        }
+
+        // Authentication
+        authButton.addEventListener("click", () => {
+            showEmailStep();
+            authModal.style.display = "flex";
+        });
+        cancelAuth.addEventListener("click", () => authModal.style.display = "none");
+        authForm.addEventListener("submit", handleEmailSubmit);
+        codeForm.addEventListener("submit", handleCodeSubmit);
+        backToEmail.addEventListener("click", showEmailStep);
+        resendCode.addEventListener("click", handleResendCode);
+
+        // Code input handling
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+
+                // Only allow numbers
+                if (!/^\d*$/.test(value)) {
+                    e.target.value = '';
+                    return;
+                }
+
+                // Move to next input if current one is filled
+                if (value && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
+                }
+
+                updateFullCode();
+            });
+
+            input.addEventListener('keydown', (e) => {
+                // Handle backspace
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasteData = e.clipboardData.getData('text').trim();
+
+                if (/^\d{6}$/.test(pasteData)) {
+                    // Fill all inputs with the pasted code
+                    for (let i = 0; i < 6; i++) {
+                        codeInputs[i].value = pasteData[i];
+                    }
+                    updateFullCode();
+                    codeInputs[5].focus();
+                }
+            });
+        });
+
+        // Review modal
+        cancelReview.addEventListener("click", () => addReviewModal.style.display = "none");
+        addReviewForm.addEventListener("submit", handleAddReview);
+
+        // Close modals when clicking outside
+        window.addEventListener("click", (e) => {
+            if (e.target === addTAModal) addTAModal.style.display = "none";
+            if (e.target === authModal) authModal.style.display = "none";
+            if (e.target === addReviewModal) addReviewModal.style.display = "none";
+        });
+
+        // Close modals with close buttons
+        closeModalBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+
+        // Tag selection
+        tagOptions.forEach(tag => {
+            tag.addEventListener("click", function() {
+                this.classList.toggle("selected");
+                updateSelectedTags();
+            });
+        });
+    }
+
+    function updateFullCode() {
+        const code = Array.from(codeInputs).map(input => input.value).join('');
+        fullCodeInput.value = code;
+    }
+
+    function showEmailStep() {
+        emailStep.style.display = 'block';
+        codeStep.style.display = 'none';
+        authForm.reset();
+
+        // Clear any existing timer
+        if (verificationTimer) {
+            clearInterval(verificationTimer);
+            verificationTimer = null;
+        }
+    }
+
+    function showCodeStep(email) {
+        emailStep.style.display = 'none';
+        codeStep.style.display = 'block';
+        emailDisplay.textContent = email;
+        verificationEmail = email;
+
+        // Clear code inputs
+        codeInputs.forEach(input => input.value = '');
+        updateFullCode();
+        codeInputs[0].focus();
+
+        // Generate and "send" verification code
+        generateVerificationCode();
+
+        // Start countdown timer
+        startVerificationTimer();
+    }
+
+    function generateVerificationCode() {
+        // Generate a random 6-digit code
+        verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // In a real application, you would send this code to the user's email
+        // For this demo, we'll just log it to the console and show an alert
+        console.log(`Verification code for ${verificationEmail}: ${verificationCode}`);
+        alert(`DEMO: Verification code sent to ${verificationEmail}: ${verificationCode}\n\nIn a real application, this would be sent via email.`);
+    }
+
+    function startVerificationTimer() {
+        let timeLeft = 600; // 10 minutes in seconds
+
+        // Update timer immediately
+        updateTimerDisplay(timeLeft);
+
+        // Update timer every second
+        verificationTimer = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(verificationTimer);
+                alert("Verification code has expired. Please request a new one.");
+                showEmailStep();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        timerDisplay.textContent = `Code expires in: ${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+
+    function handleEmailSubmit(e) {
+        e.preventDefault();
+        const email = document.getElementById("emailInput").value;
+
+        if (email.endsWith("@buffalo.edu")) {
+            showCodeStep(email);
+        } else {
+            alert("Please use a valid UB email address (ending with @buffalo.edu)");
+        }
+    }
+
+    function handleCodeSubmit(e) {
+        e.preventDefault();
+        const enteredCode = fullCodeInput.value;
+
+        if (enteredCode === verificationCode) {
+            currentUser = verificationEmail;
+            localStorage.setItem('currentUser', verificationEmail);
+            updateAuthUI();
+            authModal.style.display = "none";
+
+            // Clear verification data
+            verificationCode = null;
+            verificationEmail = null;
+            if (verificationTimer) {
+                clearInterval(verificationTimer);
+                verificationTimer = null;
+            }
+
+            alert(`Successfully verified and signed in as ${currentUser}`);
+        } else {
+            alert("Invalid verification code. Please try again.");
+            // Clear code inputs
+            codeInputs.forEach(input => input.value = '');
+            updateFullCode();
+            codeInputs[0].focus();
+        }
+    }
+
+    function handleResendCode() {
+        if (verificationEmail) {
+            generateVerificationCode();
+
+            // Reset and restart timer
+            if (verificationTimer) {
+                clearInterval(verificationTimer);
+            }
+            startVerificationTimer();
+
+            alert("New verification code sent!");
+        }
+    }
+
+    function initializeMainPage() {
+        // Build course dropdown from data
+        const courseSet = new Set();
+        TAS.forEach(ta => ta.courses.forEach(c => courseSet.add(c)));
+
+        // Sort courses numerically
+        const sortedCourses = Array.from(courseSet).sort((a, b) => {
+            const numA = parseInt(a.match(/\d+/)[0]);
+            const numB = parseInt(b.match(/\d+/)[0]);
+            return numA - numB;
+        });
+
+        sortedCourses.forEach(course => {
+            const opt = document.createElement("option");
+            opt.value = course;
+            opt.textContent = course;
+            courseSelect.appendChild(opt);
+        });
+
+        // Initial render
+        renderList(TAS);
+    }
+
+    function updateAuthUI() {
+        if (currentUser) {
+            authButton.innerHTML = `<span class="verified-badge"></span> Signed in as ${currentUser}`;
+            authButton.classList.add("btn-disabled");
+            authButton.disabled = true;
+        } else {
+            authButton.textContent = "Sign in with UB Email";
+            authButton.classList.remove("btn-disabled");
+            authButton.disabled = false;
+        }
+    }
+
+    function handleAddTA(e) {
+        e.preventDefault();
+
+        if (!currentUser) {
+            alert("Please sign in with your UB email to add a TA");
+            authModal.style.display = "flex";
+            return;
+        }
+
+        const name = document.getElementById("taName").value;
+        const courses = document.getElementById("taCourses").value
+            .split(',')
+            .map(course => course.trim())
+            .filter(course => course !== '');
+
+        if (name && courses.length > 0) {
+            // Create new TA object
+            const newTA = {
+                id: Math.max(...TAS.map(ta => ta.id)) + 1,
+                name: name,
+                courses: courses,
+                avgRating: 0,
+                reviewCount: 0,
+                aiSummary: "No reviews yet. Be the first to review this TA!",
+                reviews: []
+            };
+
+            TAS.push(newTA);
+            addTAModal.style.display = "none";
+            addTAForm.reset();
+
+            // Update course dropdown
+            courses.forEach(course => {
+                if (!Array.from(courseSelect.options).some(opt => opt.value === course)) {
+                    const opt = document.createElement("option");
+                    opt.value = course;
+                    opt.textContent = course;
+                    courseSelect.appendChild(opt);
+                }
+            });
+
+            // Re-render the list
+            renderList(TAS);
+
+            // Show success message
+            alert(`Successfully added ${name} to the TA list!`);
+        }
+    }
+
+    function openReviewModal(ta) {
+        if (!currentUser) {
+            alert("Please sign in with your UB email to submit a review");
+            authModal.style.display = "flex";
+            return;
+        }
+
+        // Check if user has already reviewed this TA
+        const hasReviewed = ta.reviews.some(review => review.userId === currentUser);
+        if (hasReviewed) {
+            alert("You have already submitted a review for this TA. Each user can only review a TA once.");
+            return;
+        }
+
+        currentTAForReview = ta;
+        reviewTAName.textContent = ta.name;
+
+        // Populate course dropdown
+        reviewCourse.innerHTML = '';
+        ta.courses.forEach(course => {
+            const option = document.createElement("option");
+            option.value = course;
+            option.textContent = course;
+            reviewCourse.appendChild(option);
+        });
+
+        // Reset form
+        addReviewForm.reset();
+        tagOptions.forEach(tag => tag.classList.remove("selected"));
+        updateSelectedTags();
+
+        addReviewModal.style.display = "flex";
+    }
+
+    function updateSelectedTags() {
+        const selected = Array.from(document.querySelectorAll(".tag-option.selected"))
+            .map(tag => tag.getAttribute("data-tag"));
+        document.getElementById("selectedTags").value = JSON.stringify(selected);
+    }
+
+    function handleAddReview(e) {
+        e.preventDefault();
+
+        if (!currentUser || !currentTAForReview) return;
+
+        const formData = new FormData(addReviewForm);
+        const overallRating = parseInt(formData.get("overallRating"));
+        const officeHours = parseInt(formData.get("officeHours"));
+        const piazza = parseInt(formData.get("piazza"));
+        const grading = parseInt(formData.get("grading"));
+        const course = formData.get("reviewCourse");
+        const comment = formData.get("reviewComment");
+        const tags = JSON.parse(formData.get("selectedTags"));
+
+        // Create new review
+        const newReview = {
+            userId: currentUser,
+            course: course,
+            overallRating: overallRating,
+            officeHours: officeHours,
+            piazza: piazza,
+            grading: grading,
+            tags: tags,
+            comment: comment,
+            date: new Date().toISOString().split('T')[0] // YYYY-MM-DD format
+        };
+
+        // Add review to TA
+        const taIndex = TAS.findIndex(ta => ta.id === currentTAForReview.id);
+        if (taIndex !== -1) {
+            TAS[taIndex].reviews.push(newReview);
+
+            // Update TA stats
+            updateTAStats(TAS[taIndex]);
+
+            // Close modal and reset
+            addReviewModal.style.display = "none";
+            addReviewForm.reset();
+
+            // If we're on the detail page, refresh it
+            if (taId) {
+                showTADetail(taId);
+            } else {
+                // Otherwise refresh the list
+                renderList(TAS);
+            }
+
+            alert("Thank you for your review!");
+        }
+    }
+
+    function updateTAStats(ta) {
+        if (ta.reviews.length === 0) {
+            ta.avgRating = 0;
+            ta.reviewCount = 0;
+            return;
+        }
+
+        // Calculate average overall rating
+        const totalRating = ta.reviews.reduce((sum, review) => sum + review.overallRating, 0);
+        ta.avgRating = totalRating / ta.reviews.length;
+        ta.reviewCount = ta.reviews.length;
+
+        // Update AI summary based on reviews
+        updateAISummary(ta);
+    }
+
+    function updateAISummary(ta) {
+        if (ta.reviews.length === 0) {
+            ta.aiSummary = "No reviews yet. Be the first to review this TA!";
+            return;
+        }
+
+        // Simple algorithm to generate summary based on review data
+        const officeHoursAvg = ta.reviews.reduce((sum, review) => sum + review.officeHours, 0) / ta.reviews.length;
+        const piazzaAvg = ta.reviews.reduce((sum, review) => sum + review.piazza, 0) / ta.reviews.length;
+        const gradingAvg = ta.reviews.reduce((sum, review) => sum + review.grading, 0) / ta.reviews.length;
+
+        // Count tag frequencies
+        const tagCounts = {};
+        ta.reviews.forEach(review => {
+            review.tags.forEach(tag => {
+                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+            });
+        });
+
+        // Get top tags
+        const topTags = Object.entries(tagCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .map(entry => entry[0]);
+
+        // Generate summary based on data
+        let summary = `${ta.name} is `;
+
+        if (ta.avgRating >= 4.5) {
+            summary += "highly regarded by students. ";
+        } else if (ta.avgRating >= 4.0) {
+            summary += "well-regarded by students. ";
+        } else if (ta.avgRating >= 3.0) {
+            summary += "generally viewed positively by students. ";
+        } else {
+            summary += "has mixed reviews from students. ";
+        }
+
+        if (officeHoursAvg >= 4.5) {
+            summary += "Students consistently praise their office hours as extremely helpful. ";
+        } else if (officeHoursAvg >= 4.0) {
+            summary += "Students find their office hours generally helpful. ";
+        }
+
+        if (piazzaAvg >= 4.5) {
+            summary += "They are very responsive on Piazza and provide helpful answers. ";
+        }
+
+        if (gradingAvg >= 4.5) {
+            summary += "Their grading is considered fair and timely. ";
+        } else if (gradingAvg <= 2.5) {
+            summary += "Some students have expressed concerns about their grading practices. ";
+        }
+
+        if (topTags.length > 0) {
+            summary += `Common descriptors include: ${topTags.join(", ")}.`;
+        }
+
+        ta.aiSummary = summary;
+    }
+
+    // Helper function to generate star rating visualization
+    function generateStars(rating) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        let starsHTML = '';
+
+        for (let i = 0; i < 5; i++) {
+            if (i < fullStars) {
+                starsHTML += '★';
+            } else if (i === fullStars && hasHalfStar) {
+                starsHTML += '½';
+            } else {
+                starsHTML += '☆';
+            }
+        }
+
+        return `<span class="stars">${starsHTML}</span>`;
+    }
+
+    function renderList(data) {
+        taListEl.innerHTML = "";
+        if (data.length === 0) {
+            emptyState.style.display = "block";
+            return;
+        }
+        emptyState.style.display = "none";
+
+        data.forEach(ta => {
+            const card = document.createElement("div");
+            card.className = "ta-card";
+
+            // Calculate rating bar width
+            const ratingPercent = (ta.avgRating / 5) * 100;
+
+            card.innerHTML = `
+                    <div>
+                        <div class="ta-name">${ta.name}</div>
+                        <div class="ta-courses">
+                            ${ta.courses.map(course => `<span class="course-tag">${course}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="ta-rating">
+                        <div>
+                            <div class="rating-label">Avg Rating</div>
+                            <div class="rating-value">
+                                ${ta.avgRating.toFixed(1)}
+                                ${generateStars(ta.avgRating)}
+                            </div>
+                            <div class="rating-label">${ta.reviewCount} review${ta.reviewCount !== 1 ? 's' : ''}</div>
+                        </div>
+                        <div class="rating-bar">
+                            <div class="rating-fill" style="width: ${ratingPercent}%"></div>
+                        </div>
+                    </div>
+                `;
+
+            card.addEventListener("click", () => {
+                window.location.href = `?id=${ta.id}`;
+            });
+
+            taListEl.appendChild(card);
+        });
+    }
+
+    function applyFilters() {
+        const text = searchInput.value.toLowerCase();
+        const selectedCourse = courseSelect.value;
+
+        const filtered = TAS.filter(ta => {
+            const matchesSearch =
+                ta.name.toLowerCase().includes(text) ||
+                ta.courses.some(c => c.toLowerCase().includes(text));
+
+            const matchesCourse =
+                selectedCourse === "all" || ta.courses.includes(selectedCourse);
+
+            return matchesSearch && matchesCourse;
+        });
+
+        renderList(filtered);
+    }
+
+    function showTADetail(id) {
+        // Update the main container to show TA details
+        const container = document.querySelector('.container');
+        const ta = TAS.find(ta => ta.id === parseInt(id));
+
+        if (!ta) {
+            container.innerHTML = `
+                    <div class="ta-detail">
+                        <h2>TA Not Found</h2>
+                        <p>The requested teaching assistant could not be found.</p>
+                        <button class="btn btn-primary" onclick="window.location.href = '?'">Back to TA List</button>
+                    </div>
+                `;
+            return;
+        }
+
+        // Calculate averages for rating breakdown
+        const officeHoursAvg = ta.reviews.length > 0 ?
+            (ta.reviews.reduce((sum, review) => sum + review.officeHours, 0) / ta.reviews.length).toFixed(1) : "N/A";
+        const piazzaAvg = ta.reviews.length > 0 ?
+            (ta.reviews.reduce((sum, review) => sum + review.piazza, 0) / ta.reviews.length).toFixed(1) : "N/A";
+        const gradingAvg = ta.reviews.length > 0 ?
+            (ta.reviews.reduce((sum, review) => sum + review.grading, 0) / ta.reviews.length).toFixed(1) : "N/A";
+
+        // Get unique courses from reviews for filtering
+        const reviewCourses = [...new Set(ta.reviews.map(review => review.course))];
+
+        // Calculate rating bar width
+        const ratingPercent = (ta.avgRating / 5) * 100;
+
+        container.innerHTML = `
+                <div class="action-bar">
+                    <button class="btn" onclick="window.location.href = '?'">← Back to TA List</button>
+                    <button class="btn btn-primary" id="addReviewButton">Add Review</button>
+                </div>
+
+                <div class="ta-detail">
+                    <div class="ta-header">
+                        <div class="ta-info">
+                            <h2>${ta.name}</h2>
+                            <div class="ta-courses">
+                                ${ta.courses.map(course => `<span class="course-tag">${course}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="ta-rating">
+                            <div class="rating-label">Overall Rating</div>
+                            <div class="rating-value">
+                                ${ta.avgRating.toFixed(1)}
+                                ${generateStars(ta.avgRating)}
+                            </div>
+                            <div class="rating-label">${ta.reviewCount} review${ta.reviewCount !== 1 ? 's' : ''}</div>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: ${ratingPercent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rating-breakdown">
+                        <div class="breakdown-category">
+                            <h4>Office Hours Helpfulness</h4>
+                            <div class="breakdown-value">${officeHoursAvg}</div>
+                            ${officeHoursAvg !== "N/A" ? generateStars(parseFloat(officeHoursAvg)) : ""}
+                        </div>
+                        <div class="breakdown-category">
+                            <h4>Piazza Responsiveness</h4>
+                            <div class="breakdown-value">${piazzaAvg}</div>
+                            ${piazzaAvg !== "N/A" ? generateStars(parseFloat(piazzaAvg)) : ""}
+                        </div>
+                        <div class="breakdown-category">
+                            <h4>Grading</h4>
+                            <div class="breakdown-value">${gradingAvg}</div>
+                            ${gradingAvg !== "N/A" ? generateStars(parseFloat(gradingAvg)) : ""}
+                        </div>
+                    </div>
+
+                    <div class="ai-summary">
+                        <h3>AI Summary</h3>
+                        <p>${ta.aiSummary}</p>
+                    </div>
+
+                    <div class="reviews-section">
+                        <div class="filter-controls">
+                            <h3>Student Reviews</h3>
+                            <select id="reviewFilter" class="select">
+                                <option value="all">All Courses</option>
+                                ${reviewCourses.map(course => `<option value="${course}">${course}</option>`).join('')}
+                            </select>
+                        </div>
+                        ${ta.reviews.length > 0 ?
+            ta.reviews.map(review => `
+                                <div class="review-card" data-course="${review.course}">
+                                    ${review.course ? `<div class="review-course">${review.course}</div>` : ''}
+                                    <div class="review-header">
+                                        <div class="anonymous-user">UB Student</div>
+                                        <div class="review-date">${review.date}</div>
+                                    </div>
+                                    <div class="review-details">
+                                        <div class="rating-category">
+                                            <span class="rating-category-name">Overall</span>
+                                            <span class="rating-category-value">${review.overallRating}/5 ${generateStars(review.overallRating)}</span>
+                                        </div>
+                                        <div class="rating-category">
+                                            <span class="rating-category-name">Office Hours</span>
+                                            <span class="rating-category-value">${review.officeHours}/5</span>
+                                        </div>
+                                        <div class="rating-category">
+                                            <span class="rating-category-name">Piazza</span>
+                                            <span class="rating-category-value">${review.piazza}/5</span>
+                                        </div>
+                                        <div class="rating-category">
+                                            <span class="rating-category-name">Grading</span>
+                                            <span class="rating-category-value">${review.grading}/5</span>
+                                        </div>
+                                    </div>
+                                    ${review.tags.length > 0 ? `
+                                        <div class="review-tags">
+                                            ${review.tags.map(tag => `<span class="review-tag">${tag}</span>`).join('')}
+                                        </div>
+                                    ` : ''}
+                                    ${review.comment ? `<div class="review-comment">${review.comment}</div>` : ''}
+                                </div>
+                            `).join('') :
+            '<p>No reviews yet. Be the first to review this TA!</p>'
+        }
+                    </div>
+                </div>
+            `;
+
+        // Add event listener for the Add Review button
+        document.getElementById("addReviewButton").addEventListener("click", () => openReviewModal(ta));
+
+        // Add event listener for review filtering
+        document.getElementById("reviewFilter").addEventListener("change", function() {
+            const selectedCourse = this.value;
+            const reviewCards = document.querySelectorAll('.review-card');
+
+            reviewCards.forEach(card => {
+                if (selectedCourse === "all" || card.getAttribute("data-course") === selectedCourse) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>
